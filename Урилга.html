@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тусгай урилга</title>
+
+  <style>
+    :root {
+      --gold: #e8c778;
+      --dark-gold: #9e712e;
+      --cream: #fff8e9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--cream);
+      background:
+        linear-gradient(
+          rgba(24, 16, 12, 0.48),
+          rgba(24, 16, 12, 0.62)
+        ),
+        url("background.jpg") center / cover fixed;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 35px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .scene {
+      width: min(100%, 560px);
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      letter-spacing: 5px;
+      font-size: 11px;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 7vw, 48px);
+      font-weight: normal;
+      margin: 0 0 12px;
+    }
+
+    .intro {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #f3e5c8;
+    }
+
+    /* Дугтуй */
+
+    .envelope-area {
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 25px 0 8px;
+      perspective: 1000px;
+    }
+
+    .envelope {
+      position: relative;
+      width: min(310px, 86vw);
+      height: 185px;
+      cursor: pointer;
+      border: 1px solid var(--gold);
+      background: #553722;
+      box-shadow: 0 16px 45px #0006;
+      transition: transform 0.3s;
+      padding: 0;
+      color: var(--gold);
+    }
+
+    .envelope:hover {
+      transform: translateY(-5px);
+    }
+
+    .envelope-back {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(140deg, #805831, #422719);
+    }
+
+    .letter-preview {
+      position: absolute;
+      left: 7%;
+      width: 86%;
+      height: 87%;
+      bottom: 4%;
+      background: var(--cream);
+      color: #74502a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      transition: transform 1s ease;
+    }
+
+    .letter-preview span:first-child {
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+
+    .letter-preview span:last-child {
+      font-size: 27px;
+    }
+
+    .flap {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, #c9a05c, #8b5c2b);
+      clip-path: polygon(0 0, 100% 0, 50% 58%);
+      transform-origin: top center;
+      transition: transform 0.7s ease;
+      z-index: 4;
+      backface-visibility: visible;
+    }
+
+    .envelope-front {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: linear-gradient(
+        35deg,
+        #624027 0%,
+        #986d3c 50%,
+        #624027 100%
+      );
+      clip-path: polygon(0 0, 50% 57%, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .seal {
+      position: absolute;
+      z-index: 5;
+      width: 48px;
+      height: 48px;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, #f4dda0, #a97830);
+      color: #70451e;
+      border: 2px solid #f4dfa8;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      box-shadow: 0 2px 10px #0004;
+      transition: opacity 0.3s;
+    }
+
+    .hint {
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin-top: 15px;
+    }
+
+    /* Урилга нээгдэх хөдөлгөөн */
+
+    .envelope.open .flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope.open .letter-preview {
+      transform: translateY(-115px);
+      z-index: 5;
+    }
+
+    .envelope.open .seal {
+      opacity: 0;
+    }
+
+    .envelope.open {
+      cursor: default;
+    }
+
+    /* Урилгын дотор хэсэг */
+
+    .invitation {
+      display: none;
+      margin: 30px auto 0;
+      padding: 34px 22px;
+      background: rgba(255, 248, 233, 0.97);
+      color: #604124;
+      border: 2px solid var(--gold);
+      outline: 1px solid #d4ad65;
+      outline-offset: -9px;
+      box-shadow: 0 15px 50px #0005;
+      animation: appear 1s ease both;
+    }
+
+    .invitation.visible {
+      display: block;
+    }
+
+    .ornament {
+      color: var(--dark-gold);
+      font-size: 27px;
+      margin-bottom: 12px;
+    }
+
+    .invitation h2 {
+      font-size: clamp(29px, 7vw, 43px);
+      font-weight: normal;
+      line-height: 1.25;
+      margin: 12px 0 20px;
+    }
+
+    .invitation p {
+      font-size: 15px;
+      line-height: 1.9;
+    }
+
+    .gold-line {
+      width: 90px;
+      height: 1px;
+      background: var(--dark-gold);
+      margin: 22px auto;
+    }
+
+    .detail {
+      font-size: 14px;
+      line-height: 2.1;
+    }
+
+    .map-link {
+      display: inline-block;
+      margin-top: 22px;
+      padding: 12px 23px;
+      border: 1px solid var(--dark-gold);
+      color: #604124;
+      text-decoration: none;
+      font-size: 13px;
+      transition: 0.25s;
+    }
+
+    .map-link:hover {
+      background: #ead6ac;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page {
+        padding: 26px 14px;
+      }
+
+      .envelope-area {
+        height: 220px;
+      }
+
+      .invitation {
+        padding: 30px 18px;
+      }
+
+      body {
+        background-attachment: scroll;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <section class="scene">
+
+      <div class="eyebrow">A SPECIAL INVITATION</div>
+
+      <h1>Танд зориулсан урилга</h1>
+
+      <p class="intro">
+        Бидний онцгой мөчийг<br>
+        хамтдаа хуваалцахыг урьж байна.
+      </p>
+
+      <div class="envelope-area">
+        <button
+          class="envelope"
+          id="envelope"
+          aria-label="Урилгын дугтуйг нээх"
+          aria-expanded="false"
+          aria-controls="invitation"
+          onclick="openInvitation()"
+        >
+          <span class="envelope-back"></span>
+
+          <span class="letter-preview">
+            <span>WITH LOVE</span>
+            <span>✧ ❦ ✧</span>
+          </span>
+
+          <span class="flap"></span>
+          <span class="envelope-front"></span>
+          <span class="seal">✦</span>
+        </button>
+      </div>
+
+      <div class="hint" id="hint">
+        ✧ ДУГТУЙ ДЭЭР ДАРЖ НЭЭНЭ ҮҮ ✧
+      </div>
+
+      <article class="invitation" id="invitation">
+        <div class="ornament">✧ ❦ ✧</div>
+
+        <div class="eyebrow">YOU ARE INVITED</div>
+
+        <h2>Онцгой арга хэмжээ</h2>
+
+        <p>
+          Эрхэм хүндэт таныг<br>
+          бидний баярт мөчид хүрэлцэн ирж,<br>
+          баяр хөөрөө хуваалцахыг урьж байна.
+        </p>
+
+        <div class="gold-line"></div>
+
+        <div class="detail">
+          <strong>Огноо</strong><br>
+          2026 оны XX сарын XX<br>
+
+          <strong>Цаг</strong><br>
+          XX:XX цаг<br>
+
+          <strong>Байршил</strong><br>
+          Байршлын нэрээ энд бичнэ үү
+        </div>
+
+        <a
+          class="map-link"
+          href="https://maps.google.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          БАЙРШИЛ ХАРАХ ↗
+        </a>
+
+        <div class="gold-line"></div>
+
+        <div class="ornament">❦</div>
+      </article>
+
+    </section>
+  </main>
+
+  <script>
+    function openInvitation() {
+      const envelope = document.getElementById("envelope");
+      const invitation = document.getElementById("invitation");
+      const hint = document.getElementById("hint");
+
+      if (envelope.classList.contains("open")) return;
+
+      envelope.classList.add("open");
+      envelope.setAttribute("aria-expanded", "true");
+      hint.textContent = "✧ ТАНЫ УРИЛГА ✧";
+
+      setTimeout(() => {
+        invitation.classList.add("visible");
+
+        setTimeout(() => {
+          invitation.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }, 100);
+      }, 750);
+    }
+  </script>
+</body>
+</html>
+
+
